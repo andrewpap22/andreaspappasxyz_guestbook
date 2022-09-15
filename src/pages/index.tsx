@@ -1,4 +1,29 @@
 import { signIn, signOut, useSession } from "next-auth/react";
+import { trpc } from "../utils/trpc";
+
+/// component to get all messages using react-query
+const Messages = () => {
+  const { data: messages, isLoading } = trpc.useQuery([
+    "guestbook.getAllMessagesAndNames",
+  ]);
+
+  if (isLoading) {
+    return <div>Fetching messages ...</div>;
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      {messages?.map((msg, index) => {
+        return (
+          <div key={index}>
+            <p>{msg.message}</p>
+            <span>- {msg.name}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
 
 const Home = () => {
   const { data: session, status } = useSession();
@@ -30,6 +55,11 @@ const Home = () => {
               Logout
             </span>
           </button>
+
+          {/* Render names and messages when logged in */}
+          <div className="pt-10 p-1 border-dashed border-2 border-gray-500 rounded-lg">
+            <Messages />
+          </div>
         </div>
       ) : (
         <div>
@@ -41,6 +71,11 @@ const Home = () => {
               Login with Discord
             </span>
           </button>
+
+          {/* Render names and messages when logged out as well */}
+          <div className="pt-10 p-1 border-dashed border-2 border-gray-500 rounded-lg">
+            <Messages />
+          </div>
         </div>
       )}
     </main>

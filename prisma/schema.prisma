@@ -63,10 +63,10 @@ model VerificationToken {
     @@unique([identifier, token])
 }
 
-model GuestBook {
+model Guestbook {
     id        String   @id @default(cuid())
     name      String
-    email     String
+    email     String?
     message   String   @db.VarChar(100)
     createdAt DateTime @default(now())
 }

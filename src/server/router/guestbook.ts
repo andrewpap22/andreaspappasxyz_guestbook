@@ -9,10 +9,10 @@ import { TRPCError } from "@trpc/server";
  */
 export const guestbookRouter = createRouter()
   /// get all messages in the guestbook (this doesn't need to be protected)
-  .query("getAllMessages", {
+  .query("getAllMessagesAndNames", {
     async resolve({ ctx }) {
       try {
-        return await ctx.prisma.guestBook.findMany({
+        return await ctx.prisma.guestbook.findMany({
           select: {
             name: true,
             message: true,
@@ -44,7 +44,7 @@ export const guestbookRouter = createRouter()
 
     async resolve({ ctx, input }) {
       try {
-        await ctx.prisma.guestBook.create({
+        await ctx.prisma.guestbook.create({
           data: {
             name: input.name,
             email: input.email,
