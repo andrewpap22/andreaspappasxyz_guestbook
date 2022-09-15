@@ -38,7 +38,6 @@ export const guestbookRouter = createRouter()
   .mutation("postMessage", {
     input: z.object({
       name: z.string(),
-      email: z.string(),
       message: z.string(),
     }),
 
@@ -47,7 +46,6 @@ export const guestbookRouter = createRouter()
         await ctx.prisma.guestbook.create({
           data: {
             name: input.name,
-            email: input.email,
             message: input.message,
           },
         });
