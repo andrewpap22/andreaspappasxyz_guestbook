@@ -62,86 +62,97 @@ const Home = () => {
   }
 
   return (
-    <main className="flex flex-col items-center">
-      <h1 className="text-3xl pt-4 pb-2">🦁 andreaspappas.xyz - Guestbook</h1>
+    <>
+      <header>
+        <h1 className="text-3xl pt-4 pb-2 flex flex-col items-center">
+          🦁 andreaspappas.xyz - Guestbook
+        </h1>
+      </header>
+      <main className="flex flex-col items-center">
+        <div className=" p-1 border-dashed border-2 border-gray-500 rounded-lg">
+          <p className="text-green-500 p-2">
+            Come and say hi 👋, || share some wisdom 📖, || share a joke 🃏 -
+            surprise me!
+          </p>
+        </div>
 
-      <div className=" p-1 border-dashed border-2 border-gray-500 rounded-lg">
-        <p className="text-green-500 p-2">
-          Come and say hi 👋, || share some wisdom 📖, || share a joke 🃏 -
-          surprise me!
-        </p>
-      </div>
+        {session ? (
+          <div className="pt-10">
+            <p>Hi 👋 {session.user?.name}</p>
 
-      {session ? (
-        <div className="pt-10">
-          <p>Hi 👋 {session.user?.name}</p>
-
-          <button
-            onClick={() => signOut()}
-            className="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800"
-          >
-            <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-              Logout
-            </span>
-          </button>
-
-          <div className="pt-6">
-            <form
-              className="flex gap-2"
-              onSubmit={(event) => {
-                event.preventDefault();
-
-                postMessage.mutate({
-                  name: session.user?.name as string,
-                  message,
-                });
-
-                setMessage("");
-              }}
+            <button
+              onClick={() => signOut()}
+              className="relative inline-flex items-center justify-center mt-1 p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800"
             >
-              <input
-                type="text"
-                value={message}
-                placeholder="Enter your message here..."
-                maxLength={100}
-                onChange={(event) => setMessage(event.target.value)}
-                className="px-4 py-2 rounded-lg border-2 border-zinc-800 bg-neutral-900 focus:outline-none"
-              />
+              <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                Logout
+              </span>
+            </button>
 
-              <button
-                type="submit"
-                className="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800"
+            <div className="pt-6">
+              <form
+                className="flex gap-2"
+                onSubmit={(event) => {
+                  event.preventDefault();
+
+                  postMessage.mutate({
+                    name: session.user?.name as string,
+                    message,
+                  });
+
+                  setMessage("");
+                }}
               >
-                <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                  Submit
-                </span>
-              </button>
-            </form>
-          </div>
+                <input
+                  type="text"
+                  value={message}
+                  placeholder="Enter your message here..."
+                  maxLength={100}
+                  onChange={(event) => setMessage(event.target.value)}
+                  className="px-4 py-2 rounded-lg border-2 border-zinc-800 bg-neutral-900 focus:outline-none"
+                />
 
-          {/* Render names and messages when logged in */}
-          <div className="pt-10 p-1 border-dashed border-2 border-gray-500 rounded-lg">
-            <Messages />
-          </div>
-        </div>
-      ) : (
-        <div>
-          <button
-            onClick={() => signIn("discord")}
-            className="relative inline-flex items-center justify-center mt-2 p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800"
-          >
-            <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-              Login with Discord
-            </span>
-          </button>
+                <button
+                  type="submit"
+                  className="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800"
+                >
+                  <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                    Submit
+                  </span>
+                </button>
+              </form>
+            </div>
 
-          {/* Render names and messages when logged out as well */}
-          <div className="pt-10 p-1 border-dashed border-2 border-gray-500 rounded-lg">
-            <Messages />
+            {/* Render names and messages when logged in */}
+            <div className="pt-10">
+              <Messages />
+            </div>
           </div>
-        </div>
-      )}
-    </main>
+        ) : (
+          <div>
+            <button
+              onClick={() => signIn("discord")}
+              className="relative inline-flex items-center justify-center mt-2 p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800"
+            >
+              <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                Login with Discord
+              </span>
+            </button>
+
+            {/* Render names and messages when logged out as well */}
+            <div className="pt-10">
+              <Messages />
+            </div>
+          </div>
+        )}
+      </main>
+      <footer>
+        <p className="text-center text-sm pt-4 pb-2">
+          --- <a href="https://andreaspappas.xyz">andreaspappas.xyz</a> ©️2022.
+          ---
+        </p>
+      </footer>
+    </>
   );
 };
 

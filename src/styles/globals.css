@@ -2,7 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "Virgil";
+  src: url("Virgil.woff2");
+  font-display: swap;
+}
+
 body {
   /* apply dark theme to whole app */
   @apply bg-neutral-900 text-neutral-100;
+
+  /* apply Virgil font from excalidraw to whole app */
+  font-family: "Virgil";
+  src: url("Virgil.woff2");
+  font-display: swap;
 }
