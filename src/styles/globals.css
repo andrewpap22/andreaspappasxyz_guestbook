@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+  /* apply dark theme to whole app */
+  @apply bg-neutral-900 text-neutral-100;
+}
