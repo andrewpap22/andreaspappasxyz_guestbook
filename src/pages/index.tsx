@@ -1,7 +1,8 @@
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import LoadingSpinner from "../components/loading";
-import AuthButtons from "../components/authButtons";
+import clsx from "clsx";
+import AuthButtons, { LogOutButton } from "../components/authButtons";
 import { useState } from "react";
 import { trpc } from "../utils/trpc";
 
@@ -42,6 +43,8 @@ const Messages = () => {
 const Home = () => {
   const { data: session, status } = useSession();
   const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const ctx = trpc.useContext();
 
   /**
@@ -69,6 +72,31 @@ const Home = () => {
       ctx.invalidateQueries(["guestbook.getAllMessagesAndNames"]);
     },
   });
+
+  const handleSubmit = () => {
+    setLoading(true);
+
+    if (message.length === 0) {
+      setLoading(false);
+      setError("Your message is empty!");
+      return;
+    }
+
+    if (message.length > 100) {
+      setLoading(false);
+      setError("Your message must be less than 100 characters.");
+      return;
+    }
+
+    postMessage.mutate({
+      name: session?.user?.name as string,
+      message,
+    });
+
+    setMessage("");
+    setLoading(false);
+    console.log("refetched!");
+  };
 
   if (status === "loading") {
     return (
@@ -110,47 +138,42 @@ const Home = () => {
               <p>Hello 👋 {session.user?.name}</p>
             )}
 
-            <button
-              onClick={() => signOut()}
-              className="relative inline-flex items-center justify-center mt-1 p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800"
-            >
-              <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                Logout
-              </span>
-            </button>
+            <LogOutButton />
 
             <div className="pt-6">
-              <form
-                className="flex gap-2"
-                onSubmit={(event) => {
-                  event.preventDefault();
+              <p className="text-sm text-red-500">{error}</p>
+              <input
+                type="text"
+                name="message"
+                id="message"
+                value={message}
+                placeholder="Enter your message here..."
+                // maxLength={100}
+                onChange={(event) => setMessage(event.target.value)}
+                className="w-full px-4 py-2 mt-1 text-xl border-2 rounded-md bg-zinc-800 focus:outline-none focus:border-opacity-100 border-opacity-80 border-t-pink text-slate-200"
+              />
 
-                  postMessage.mutate({
-                    name: session.user?.name as string,
-                    message,
-                  });
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex gap-2">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="px-3 py-2 mt-2 text-sm transition-colors duration-300 border-2 rounded-md cursor-pointer border-opacity-80 border-t-purple hover:bg-t-purple hover:bg-opacity-30 hover:text-white disabled:opacity-80"
+                    onClick={() => handleSubmit()}
+                  >
+                    Sign ✍️
+                  </button>
+                </div>
 
-                  setMessage("");
-                }}
-              >
-                <input
-                  type="text"
-                  value={message}
-                  placeholder="Enter your message here..."
-                  maxLength={100}
-                  onChange={(event) => setMessage(event.target.value)}
-                  className="px-4 py-2 rounded-lg border-2 border-zinc-800 bg-neutral-900 focus:outline-none"
-                />
-
-                <button
-                  type="submit"
-                  className="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800"
+                <p
+                  className={clsx(
+                    "text-lg",
+                    message.length > 100 ? "text-red-500" : "text-gray-500"
+                  )}
                 >
-                  <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                    Sign
-                  </span>
-                </button>
-              </form>
+                  {message.length}/100
+                </p>
+              </div>
             </div>
 
             {/* Render names and messages when logged in */}
