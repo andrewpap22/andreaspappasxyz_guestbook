@@ -1,6 +1,7 @@
-import { signIn, signOut, useSession } from "next-auth/react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDiscord } from "@fortawesome/free-brands-svg-icons";
+import { signOut, useSession } from "next-auth/react";
+import Image from "next/image";
+import LoadingSpinner from "../components/loading";
+import AuthButtons from "../components/authButtons";
 import { useState } from "react";
 import { trpc } from "../utils/trpc";
 
@@ -11,7 +12,13 @@ const Messages = () => {
   ]);
 
   if (isLoading) {
-    return <div>Fetching messages ...</div>;
+    return (
+      <div>
+        <span className="flex flex-row justify-center content-center">
+          Fetching messages... &nbsp; <LoadingSpinner />
+        </span>
+      </div>
+    );
   }
 
   return (
@@ -19,8 +26,12 @@ const Messages = () => {
       {messages?.map((msg, index) => {
         return (
           <div key={index}>
-            <p>{msg.message}</p>
-            <span>- {msg.name}</span>
+            <p className="text-lg">{msg.message}</p>
+            <span className="text-gray-500">
+              - <span className="text-gray-300">{msg.name}</span> &nbsp; /
+              &nbsp; {msg.createdAt.toString().split(" ").slice(0, 5).join(" ")}{" "}
+              {/** .split... remove the GMT ... from the outputted string */}
+            </span>
           </div>
         );
       })}
@@ -60,7 +71,11 @@ const Home = () => {
   });
 
   if (status === "loading") {
-    return <main className="flex flex-col items-center pt-4">Loading...</main>;
+    return (
+      <main className="flex flex-col items-center pt-4">
+        Loading... <LoadingSpinner />
+      </main>
+    );
   }
 
   return (
@@ -70,7 +85,7 @@ const Home = () => {
           🦁 andreaspappas.xyz - Guestbook
         </h1>
       </header>
-      <main className="flex flex-col items-center">
+      <main className="flex flex-col items-center m-3">
         <div className=" p-1 border-dashed border-2 border-gray-500 rounded-lg">
           <p className="text-green-500 p-2">
             Come and say hi 👋, || share some wisdom 📖, || share a joke 🃏 -
@@ -80,7 +95,20 @@ const Home = () => {
 
         {session ? (
           <div className="pt-10">
-            <p>Hi 👋 {session.user?.name}</p>
+            {session.user?.image ? (
+              <div className="flex items-center gap-2">
+                <p>Hello 👋 {session.user?.name}</p>
+                <Image
+                  src={session.user!.image}
+                  alt="s"
+                  width={36}
+                  height={36}
+                  style={{ borderRadius: "50%" }}
+                />
+              </div>
+            ) : (
+              <p>Hello 👋 {session.user?.name}</p>
+            )}
 
             <button
               onClick={() => signOut()}
@@ -119,7 +147,7 @@ const Home = () => {
                   className="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800"
                 >
                   <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                    Submit
+                    Sign
                   </span>
                 </button>
               </form>
@@ -132,14 +160,20 @@ const Home = () => {
           </div>
         ) : (
           <div>
-            <button
-              onClick={() => signIn("discord")}
-              className="relative inline-flex items-center justify-center mt-2 p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800"
-            >
-              <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                Login with Discord {<FontAwesomeIcon icon={faDiscord} />}
+            <div className="flex items-center gap-4 p-4 mt-10 border-2 rounded-md bg-[#202020] border-t-pink border-opacity-60">
+              <span>
+                <AuthButtons />
               </span>
-            </button>
+              <p className="pt-1.5 text-sm text-slate-300 w-2/3">
+                <strong>Sign the Guestbook</strong>. Share a message for a
+                future visitor of my site. <br /> Log in with Discord or GitHub
+                to comment. <br />{" "}
+                <span className="text-gray-500">
+                  Your information is only used to display your name to avoid
+                  impersonation.
+                </span>
+              </p>
+            </div>
 
             {/* Render names and messages when logged out as well */}
             <div className="pt-10">

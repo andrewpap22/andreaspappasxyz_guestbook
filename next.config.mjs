@@ -20,4 +20,12 @@ export default defineNextConfig({
     locales: ["en"],
     defaultLocale: "en",
   },
+  images: {
+    domains: [
+      "cdn.discordapp.com",
+      "use-east-1.tixte.net",
+      "raw.githubusercontent.com",
+      "avatars.githubusercontent.com",
+    ],
+  },
 });

@@ -16,6 +16,7 @@ export const guestbookRouter = createRouter()
           select: {
             name: true,
             message: true,
+            createdAt: true,
           },
           orderBy: {
             createdAt: "desc",
