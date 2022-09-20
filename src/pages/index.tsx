@@ -5,6 +5,7 @@ import clsx from "clsx";
 import AuthButtons, { LogOutButton } from "../components/authButtons";
 import { useState } from "react";
 import { trpc } from "../utils/trpc";
+import Head from "next/head";
 
 /// component to get all messages using react-query
 const Messages = () => {
@@ -31,7 +32,7 @@ const Messages = () => {
             <span className="text-gray-500">
               - <span className="text-gray-300">{msg.name}</span> &nbsp; /
               &nbsp; {msg.createdAt.toString().split(" ").slice(0, 5).join(" ")}{" "}
-              {/** .split... remove the GMT ... from the outputted string */}
+              {/** .split... removes the GMT ... from the outputted string */}
             </span>
           </div>
         );
@@ -58,7 +59,7 @@ const Home = () => {
     onMutate: () => {
       ctx.cancelQuery(["guestbook.getAllMessagesAndNames"]);
 
-      let optimisticUpdate = ctx.getQueryData([
+      const optimisticUpdate = ctx.getQueryData([
         "guestbook.getAllMessagesAndNames",
       ]);
       if (optimisticUpdate) {
@@ -88,11 +89,13 @@ const Home = () => {
       return;
     }
 
+    /// when the message is < 100 && > 0 characters, we can post it and clear the error messages
     postMessage.mutate({
       name: session?.user?.name as string,
       message,
     });
 
+    setError("");
     setMessage("");
     setLoading(false);
     console.log("refetched!");
@@ -108,6 +111,11 @@ const Home = () => {
 
   return (
     <>
+      <Head>
+        <title>A.Pappas - Guestbook</title>
+        <meta name="description" content="Sign the andreaspappas.xyz guestbook and leave a message for a future visitor of my site!" />
+      </Head>
+
       <header>
         <h1 className="text-3xl pt-4 pb-2 flex flex-col items-center">
           🦁 andreaspappas.xyz - Guestbook
